@@ -12,9 +12,13 @@ app.whenReady().then(() => {
   
   // Create a new window
   let window = new BrowserWindow({
-      width: 800,
-      height: 600,
-      show: false
+      width: 300,
+      height: 300,
+      show: false,
+      // webPreferences: {
+      //   nodeIntegration: true,
+      //   contextIsolation: false
+      // }
   });
 
   // Event listeners on the window
