@@ -1,0 +1,1 @@
+setup guide: https://www.debugandrelease.com/creating-a-simple-electron-application/

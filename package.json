@@ -1,0 +1,63 @@
+{
+  "name": "focus-helper",
+  "version": "1.0.0",
+  "description": "A desktop app to help manage your focus time",
+  "main": "app/electron/main.js",
+  "private": true,
+  "scripts": {
+    "dev-server": "webpack serve --mode development --config ./webpack.development.js",
+    "dev": "npx cross-env NODE_ENV=development electron .",
+    "preprod": "webpack --mode production --config ./webpack.production.js",
+    "prod": "npx cross-env NODE_ENV=production electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "pack": "electron-builder --dir",
+    "dist": "npm run preprod && electron-builder",
+    "dist-mac": "npm run preprod && electron-builder --mac",
+    "dist-linux": "npm run preprod && electron-builder --linux",
+    "dist-windows": "npm run preprod && electron-builder --windows"
+  },
+  "build": {
+    "productName": "focus-helper",
+    "appId": "com.mycompany|electron.myproductname",
+    "directories": {
+        "buildResources": "resources"
+    },
+    "win": {
+        "target": [
+            "nsis",
+            "msi"
+        ]
+    },
+    "linux": {
+        "target": [
+            "deb",
+            "rpm",
+            "snap",
+            "AppImage"
+        ]
+    }
+  },
+  "keywords": [],
+  "author": "ragdollonpluto",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.8.1",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "html-loader": "^4.2.0",
+    "html-webpack-plugin": "^5.5.4",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.10.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.23.6",
+    "@babel/preset-env": "^7.23.6",
+    "@babel/preset-react": "^7.23.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
