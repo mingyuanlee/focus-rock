@@ -77,6 +77,11 @@ const App = () => {
     }
   }; 
 
+  const reset = () => {
+    window.dataApi.reqWriteData([]);
+    readData();
+  }
+
   // write to json file
   const writeData = (endTime) => {
     const today = new Date();
@@ -138,7 +143,22 @@ const App = () => {
           <Button width="100px" colorScheme="blue" onClick={onClick}>
             { started ? `${Math.floor(timeElapsed / 60)} mins` : "Start"}
           </Button>
+          <Box
+            w="300px" // Width of the box
+            h="200px" // Height of the box
+            overflowY="auto" // Enable vertical scrolling
+            p={4} // Padding inside the box
+            border="1px" // Border around the box
+            borderColor="gray.200" // Border color
+          >
+            <pre>{JSON.stringify(data, null, 2)}</pre>
+          </Box>
+          <Button width="100px" colorScheme="blue" onClick={reset}>
+            Reset
+          </Button>
         </VStack>
+
+        
         
       </Flex>
   )
