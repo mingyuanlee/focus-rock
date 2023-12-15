@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Flex, VStack } from "@chakra-ui/react";
+import { useToast } from '@chakra-ui/react';
 
 const App = () => {
   const [started, setStarted] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
+  // const [endTime, setEndTime] = useState(null);
   const [type, setType] = useState(1);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+
+  const toast = useToast();
 
   const getStartTime = () => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    const roundedMinutes = 10 * Math.round(minutes / 10);
+    const roundedMinutes = 10 * Math.floor(minutes / 10);
     const formattedTime = `${hours.toString().padStart(2, '0')}:${roundedMinutes.toString().padStart(2, '0')}`;
     return formattedTime;
   }
@@ -43,30 +48,46 @@ const App = () => {
     }
   }
 
-  function createIfNotExists() {
-    const jsonFilePath = path.join(__dirname, 'data.json');
-    if (!fs.existsSync(jsonFilePath)) {
-        fs.writeFileSync(jsonFilePath, JSON.stringify([]));
+  const readData = async () => {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        window.dataApi.receiveReadData(
+          (event, result, data) => {
+            console.log("receiveReadData", result, data)
+            if (result === 0) {
+              resolve(data);
+            } else {
+              reject(data);
+            }
+          });
+          window.dataApi.reqReadData();
+      });
+
+      setData(JSON.parse(result))
+    } catch (error) {
+        setError(error);
+        // Note: can't use error directly in description, because it's an object, will throw error
+        toast({
+            title: 'Error',
+            description: 'Something bad happend in the backend',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+        });
     }
-  }
+  }; 
 
   // write to json file
-  const writeData = () => {
-    createIfNotExists();
-
-    let data = [];
-    data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-
+  const writeData = (endTime) => {
     const today = new Date();
-    
+    console.log("data:", data)
     data.push({
-        date: today.toISOString(),
+        date: today.toISOString().substring(0, 10),
         start_time: startTime,
         end_time: endTime,
         type: type
     });
-
-    fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
+    window.dataApi.reqWriteData(data);
   }
 
   const onClick = () => {
@@ -81,8 +102,7 @@ const App = () => {
     console.log(timeElapsed);
     const endTime = getEndTime();
     console.log("end time", endTime)
-    setEndTime(endTime);
-    writeData();
+    writeData(endTime);
     setTimeElapsed(0);
     setStarted(false);
   }
@@ -100,6 +120,10 @@ const App = () => {
 
     return () => clearInterval(interval);
   }, [started])
+
+  useEffect(() => {
+    readData();
+  }, []);
 
   return (
       <Flex

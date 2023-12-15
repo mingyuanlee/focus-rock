@@ -1,24 +1,34 @@
 const { 
   app, 
   BrowserWindow,
-  createWindow
+  ipcMain,
 } = require("electron");
+const {
+  writeData,
+  readData
+} = require('./listeners')
+const path = require("path");
+const { standardResultCodes } = require('./constants')
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
 // This method is called when Electron
 // has finished initializing
-app.whenReady().then(() => {
+function createWindow () {
   
   // Create a new window
   let window = new BrowserWindow({
-      width: 300,
-      height: 300,
+      width: 800,
+      height: 800,
       show: false,
-      // webPreferences: {
-      //   nodeIntegration: true,
-      //   contextIsolation: false
-      // }
+      nodeIntegration: false, 
+      webPreferences: {
+        sandbox: true,
+        devtools:true,
+        contextIsolation: true,
+        enableRemoteModule: false,
+        preload: path.join(__dirname, "preload.js")
+      }
   });
 
   // Event listeners on the window
@@ -35,7 +45,7 @@ app.whenReady().then(() => {
     console.log("prod");
     window.loadFile("app/dist/index.html");
   }
-});
+}
 
 // This method is called when Electron
 // has finished initializing
@@ -59,3 +69,24 @@ app.on("window-all-closed", function () {
       app.quit();
   }
 });
+
+ipcMain.on("req-write-data", async (event, args) => {
+  const jsondata = args[0]
+  try {
+    await writeData(jsondata)
+    event.sender.send("receive-write-data", standardResultCodes.SUCCESS, '')
+  } catch (error) {
+    // logger.error("error saving data:", error)
+    event.sender.send("receive-write-data", standardResultCodes.ERROR, error)
+  }
+})
+
+ipcMain.on("req-read-data", async (event, args) => {
+  try {
+    const data = await readData()
+    event.sender.send("receive-read-data", standardResultCodes.SUCCESS, JSON.stringify(data))
+  } catch (error) {
+    // logger.error("error saving data:", error)
+    event.sender.send("receive-read-data", standardResultCodes.ERROR, error)
+  }
+})
