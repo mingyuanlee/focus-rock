@@ -8,7 +8,7 @@ to build
 `npm run dist`
 
 todo list:
-- the timer value is wrong
+- the timer value is wrong (in dev mode it's running fine, so it's just the build version)
 - we need a list, showing each record, then we can do the update
 - the graph to show the time utilization
 - the date is wrong:

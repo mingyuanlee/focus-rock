@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Flex, VStack } from "@chakra-ui/react";
 import { useToast } from '@chakra-ui/react';
+import TimeTable from "./TimeTable";
 
 const App = () => {
   const [started, setStarted] = useState(false);
@@ -8,10 +9,13 @@ const App = () => {
   const [startTime, setStartTime] = useState(null);
   // const [endTime, setEndTime] = useState(null);
   const [type, setType] = useState(1);
-  const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [datesData, setDatesData] = useState([]);
+
 
   const toast = useToast();
+
+  const intervalsPerDay = 24 * 6; // 24 hours * 6 intervals per hour
 
   const getStartTime = () => {
     const now = new Date();
@@ -26,16 +30,11 @@ const App = () => {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
-
-    // Round up to the next multiple of 10 for minutes
     minutes = Math.ceil(minutes / 10) * 10;
-
-    // Adjust hours and minutes if minutes are 60
     if (minutes >= 60) {
       minutes = 0;
       hours = (hours + 1) % 24; // Adjust for 24-hour format
     }
-
     const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     return formattedTime;
   }
@@ -62,17 +61,16 @@ const App = () => {
           });
           window.dataApi.reqReadData();
       });
-
-      setData(JSON.parse(result))
+      setDatesData(JSON.parse(result))
     } catch (error) {
         setError(error);
         // Note: can't use error directly in description, because it's an object, will throw error
         toast({
-            title: 'Error',
-            description: 'Something bad happend in the backend',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
+          title: 'Error',
+          description: 'Something bad happend in the backend',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
         });
     }
   }; 
@@ -85,14 +83,14 @@ const App = () => {
   // write to json file
   const writeData = (endTime) => {
     const today = new Date();
-    console.log("data:", data)
-    data.push({
-        date: today.toISOString().substring(0, 10),
+    console.log("datesData:", datesData)
+    datesData.push({
+        date: today.toISOString(),
         start_time: startTime,
         end_time: endTime,
         type: type
     });
-    window.dataApi.reqWriteData(data);
+    window.dataApi.reqWriteData(datesData);
   }
 
   const onClick = () => {
@@ -117,7 +115,8 @@ const App = () => {
 
     if (started) {
       interval = setInterval(() => {
-        setTimeElapsed((prevTime) => prevTime + 1);
+        console.log("set time elapsed", timeElapsed);
+        setTimeElapsed(currentTimeElapsed => currentTimeElapsed + 1);
       }, 1000); // Update time every second
     } else {
       clearInterval(interval);
@@ -132,7 +131,7 @@ const App = () => {
 
   return (
       <Flex
-        height="100vh" // Full height of the viewport
+        // height="100vh" // Full height of the viewport
         alignItems="center" // Vertically centers content in the container
         justifyContent="center" // Horizontally centers content in the container
       >
@@ -151,15 +150,13 @@ const App = () => {
             border="1px" // Border around the box
             borderColor="gray.200" // Border color
           >
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            <pre>{JSON.stringify(datesData, null, 2)}</pre>
           </Box>
           <Button width="100px" colorScheme="blue" onClick={reset}>
             Reset
           </Button>
+          <TimeTable data={datesData} />
         </VStack>
-
-        
-        
       </Flex>
   )
 };
