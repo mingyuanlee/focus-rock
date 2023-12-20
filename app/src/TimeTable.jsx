@@ -1,7 +1,9 @@
 import { Box, Grid, GridItem, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
-const TimeTable = ({ data }) => {
+const TimeTable = ({ data, started }) => {
+  console.log("TimeTable data:", data, started)
+
   const [matrix, setMatrix] = useState(null);
   const [dates, setDates] = useState(null);
 
@@ -15,30 +17,23 @@ const TimeTable = ({ data }) => {
 
   const convertToMatrix = (data) => {
     const intervalsPerHour = intervalsPerDay / 24;
-    const dates = [...new Set(data.map(entry => entry.date))]; // Unique dates
-  
-    // Initialize matrix with false
+    const dates = [...new Set(data.map(entry => convertToLocalTimeAndFormat(entry.date)))]
     const matrix = Array.from({ length: intervalsPerDay }, () =>
       Array(dates.length).fill(false)
     );
-  
     const timeToIndex = (time) => {
       const [hours, minutes] = time.split(':').map(Number);
       return hours * intervalsPerHour + Math.floor(minutes / 10);
     };
-  
     data.forEach(entry => {
-      const columnIndex = dates.indexOf(entry.date);
+      const columnIndex = dates.indexOf(convertToLocalTimeAndFormat(entry.date));
       const startIndex = timeToIndex(entry.start_time);
       const endIndex = timeToIndex(entry.end_time);
-  
       for (let i = startIndex; i < endIndex; i++) {
         matrix[i][columnIndex] = true;
       }
     });
-  
     console.log("matrix:", matrix);
-
     return matrix;
   };
 
@@ -47,26 +42,25 @@ const TimeTable = ({ data }) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
     const day = date.getDate().toString().padStart(2, '0');
-
     return `${year}-${month}-${day}`;
   }
 
   useEffect(() => {
-    console.log("data:", data);
+    console.log("useEffect data:", data);
     if (data) {
       setDates([...new Set(data.map(entry => convertToLocalTimeAndFormat(entry.date)))]);
       setMatrix(convertToMatrix(data));
     }
-  }, [data]);
+  }, [data, started]);
 
   if (!matrix) return (
-    <Box width="800px" height="600px" overflow="auto">
+    <Box width="800px" overflow="auto">
       { !matrix && <Text>Loading...</Text> }
       </Box>
   )
 
   return (
-    <Box width="800px" height="600px" overflow="auto">
+    <Box width="800px" overflow="auto">
       <Grid templateColumns={`repeat(${matrix[0].length + 1}, max-content)`} gap="0px 20px">
         {/* Header Row for Dates */}
         <GridItem />

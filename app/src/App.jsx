@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Flex, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, VStack } from "@chakra-ui/react";
 import { useToast } from '@chakra-ui/react';
 import TimeTable from "./TimeTable";
 
@@ -136,26 +136,26 @@ const App = () => {
         justifyContent="center" // Horizontally centers content in the container
       >
         <VStack>
+        <HStack py="50px">
           <Button width="100px" colorScheme="blue" onClick={changeType}>
             { type }
           </Button>
           <Button width="100px" colorScheme="blue" onClick={onClick}>
             { started ? `${Math.floor(timeElapsed / 60)} mins` : "Start"}
           </Button>
-          <Box
-            w="300px" // Width of the box
-            h="200px" // Height of the box
-            overflowY="auto" // Enable vertical scrolling
-            p={4} // Padding inside the box
-            border="1px" // Border around the box
-            borderColor="gray.200" // Border color
-          >
-            <pre>{JSON.stringify(datesData, null, 2)}</pre>
-          </Box>
-          <Button width="100px" colorScheme="blue" onClick={reset}>
+          {/* <Button width="100px" colorScheme="blue" onClick={reset}>
             Reset
-          </Button>
-          <TimeTable data={datesData} />
+          </Button> */}
+        </HStack>
+        <Box px="20px" border="dashed 1px black" height={"400px"}>
+          <Flex
+            alignItems="center"
+            justifyContent="center"
+            height={"100%"}
+          >
+            <TimeTable data={datesData} started={started} />
+          </Flex>
+        </Box>
         </VStack>
       </Flex>
   )
