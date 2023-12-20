@@ -18,7 +18,7 @@ function createWindow () {
   
   // Create a new window
   let window = new BrowserWindow({
-      width: 1000,
+      width: 1200,
       height: 800,
       show: false,
       nodeIntegration: false, 

@@ -1,9 +1,8 @@
 import { Box, Grid, GridItem, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
+import { convertToLocalTimeAndFormat } from './utils/time';
 
 const TimeTable = ({ data, started }) => {
-  console.log("TimeTable data:", data, started)
-
   const [matrix, setMatrix] = useState(null);
   const [dates, setDates] = useState(null);
 
@@ -16,6 +15,7 @@ const TimeTable = ({ data, started }) => {
   };
 
   const convertToMatrix = (data) => {
+    console.log("convertToMatrix:", data);
     const intervalsPerHour = intervalsPerDay / 24;
     const dates = [...new Set(data.map(entry => convertToLocalTimeAndFormat(entry.date)))]
     const matrix = Array.from({ length: intervalsPerDay }, () =>
@@ -26,6 +26,7 @@ const TimeTable = ({ data, started }) => {
       return hours * intervalsPerHour + Math.floor(minutes / 10);
     };
     data.forEach(entry => {
+      if (!entry.start_time || !entry.end_time) return;
       const columnIndex = dates.indexOf(convertToLocalTimeAndFormat(entry.date));
       const startIndex = timeToIndex(entry.start_time);
       const endIndex = timeToIndex(entry.end_time);
@@ -33,20 +34,10 @@ const TimeTable = ({ data, started }) => {
         matrix[i][columnIndex] = true;
       }
     });
-    console.log("matrix:", matrix);
     return matrix;
   };
 
-  function convertToLocalTimeAndFormat(isoString) {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
   useEffect(() => {
-    console.log("useEffect data:", data);
     if (data) {
       setDates([...new Set(data.map(entry => convertToLocalTimeAndFormat(entry.date)))]);
       setMatrix(convertToMatrix(data));

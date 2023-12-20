@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Flex, HStack, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, VStack, Heading, Editable } from "@chakra-ui/react";
 import { useToast } from '@chakra-ui/react';
 import TimeTable from "./TimeTable";
+import EditableTable from "./EditableTable";
 
 const App = () => {
   const [started, setStarted] = useState(false);
@@ -93,6 +94,11 @@ const App = () => {
     window.dataApi.reqWriteData(datesData);
   }
 
+  const updateData = (new_data) => {
+    setDatesData(new_data);
+    window.dataApi.reqWriteData(new_data);
+  }
+
   const onClick = () => {
     if (!started) {
       setStarted(true);
@@ -143,10 +149,13 @@ const App = () => {
           <Button width="100px" colorScheme="blue" onClick={onClick}>
             { started ? `${Math.floor(timeElapsed / 60)} mins` : "Start"}
           </Button>
-          {/* <Button width="100px" colorScheme="blue" onClick={reset}>
+          <Button width="100px" colorScheme="blue" onClick={reset}>
             Reset
-          </Button> */}
+          </Button>
         </HStack>
+        <Heading as="h3" size="l" textAlign={"left"}>
+          Time Graph
+        </Heading>
         <Box px="20px" border="dashed 1px black" height={"400px"}>
           <Flex
             alignItems="center"
@@ -156,6 +165,10 @@ const App = () => {
             <TimeTable data={datesData} started={started} />
           </Flex>
         </Box>
+        <Heading mt="50px" as="h3" size="l" textAlign={"left"}>
+          Records
+        </Heading>
+        <EditableTable data={datesData} updateData={updateData} />
         </VStack>
       </Flex>
   )
