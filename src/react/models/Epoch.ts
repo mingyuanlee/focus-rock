@@ -1,11 +1,11 @@
 export interface Epoch {
     target: string;
-    start: number;
-    end: number;
-    endStatus: EndStatus;
+    start: string;
+    end: string | null;
+    endStatus: EndStatus | null;
 }
 
-enum EndStatus {
+export enum EndStatus {
     FINISHED,
     UNFINISHED,
     INTERRUPTED,

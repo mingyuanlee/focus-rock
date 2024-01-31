@@ -1,5 +1,7 @@
+import { Epoch } from "./Epoch";
+
 export interface Stream {
     topic: string;
-    epochs: number[];
+    epochs: Epoch[];
     archived: boolean;
 }
