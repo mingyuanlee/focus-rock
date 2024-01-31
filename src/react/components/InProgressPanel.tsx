@@ -61,6 +61,11 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
             ...prevAppStatus,
             curr_epoch: null,
         } as AppStatus))
+
+        setEpochStatus(null);
+        setTarget("");
+        setTimeUsed(0);
+        setSelectedStream("");
     }
 
     console.log({ appStatus, epochStatus })
