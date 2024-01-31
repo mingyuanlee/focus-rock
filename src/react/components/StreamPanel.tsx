@@ -59,7 +59,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
     }
 
     return (
-        <Card w="600px">
+        <Card w="800px">
         <CardHeader>
             <Heading size='md'>Streams</Heading>
         </CardHeader>
@@ -104,12 +104,12 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
                                     {stream.epochs.map((epoch) => (
                                         <AccordionItem key={epoch.target}>
                                         <Box fontSize={"15px"} p="5px" display="flex" justifyContent="space-between">
-    <Box width="200px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
-    <Box width="200px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-        {new Date(epoch.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} {" - "} 
-        {epoch.end ? new Date(epoch.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Ongoing'}
-    </Box>
-    <Box width="200px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
+    <Box width="280px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
+    <Box width="180px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+    {new Date(epoch.start).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} {" - "} 
+    {epoch.end ? new Date(epoch.end).toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : 'Ongoing'}
+</Box>
+    <Box width="140px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
         <Tag variant='solid' colorScheme={getColor(EndStatus[epoch.endStatus].toLowerCase())}>
         {EndStatus[epoch.endStatus].toLowerCase()}
     </Tag></Box>

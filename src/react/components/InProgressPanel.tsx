@@ -74,7 +74,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     }, [appStatus.curr_epoch]);
 
     return (
-        <Card w="600px" h="270px">
+        <Card w="800px" h="270px">
         <CardHeader>
             <Heading size='md'>In Progress</Heading>
         </CardHeader>
