@@ -93,8 +93,8 @@ const App = () => {
         justifyContent="center" // Horizontally centers content in the container
         className="App"
       >
-        <VStack >
-          <button onClick={reset}>rest</button>
+        <VStack p="30px" >
+          {/* <button onClick={reset}>rest</button> */}
           <InProgressPanel appStatus={appStatus} setAppStatus={wrappedSetStatus}/>
           <StreamPanel appStatus={appStatus} setAppStatus={wrappedSetStatus} />
         </VStack>
