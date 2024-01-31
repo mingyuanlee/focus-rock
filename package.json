@@ -14,7 +14,9 @@
     "dist": "npm run preprod && electron-builder",
     "dist-mac": "npm run preprod && electron-builder --mac",
     "dist-linux": "npm run preprod && electron-builder --linux",
-    "dist-windows": "npm run preprod && electron-builder --windows"
+    "dist-windows": "npm run preprod && electron-builder --windows",
+    "buildNode": "webpack --config webpack.react.config.js --config webpack.electron.config.js",
+    "cleanDist": "rm -rf dist build"
   },
   "build": {
     "productName": "focus-helper",
@@ -64,6 +66,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^10.16.16",
+    "git-revision-webpack-plugin": "^5.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
