@@ -6,6 +6,7 @@ import { Epoch } from "./models/Epoch";
 import { Store } from "./persistence/Store";
 import InProgressPanel from "./components/InProgressPanel";
 import StreamPanel from "./components/StreamPanel";
+import { read, write } from "original-fs";
 
 export interface AppStatus {
   curr_streams: Stream[];
@@ -60,25 +61,25 @@ const App = () => {
 
   const wrappedSetStatus = (status: AppStatus) => {
     setAppStatus(status);
-    writeAppStatus();
+    writeAppStatus(status.curr_streams, status.archived_streams);
   }
 
-  const writeAppStatus = async () => {
+  const writeAppStatus = async (curr_streams: Stream[], archived_streams: Stream[]) => {
     const store: Store = {
-      curr_streams: appStatus.curr_streams,
-      archived_streams: appStatus.archived_streams,
+      curr_streams: curr_streams,
+      archived_streams: archived_streams,
     };
+    console.log("writing:", store)
     window.dataApi.reqWriteData(store);
   }
 
   const reset = () => {
-    wrappedSetStatus(
-      {
-        curr_streams: [],
-        archived_streams: [],
-        curr_epoch: null,
-      }
-    )
+    setAppStatus({
+      curr_streams: [],
+      archived_streams: [],
+      curr_epoch: null,
+    });
+    writeAppStatus([], []);
   }
 
 
