@@ -20,4 +20,4 @@ to develop
 `npm run dev`
 
 to build
-`npm run dist`
+`npm run dist-mac`

@@ -6,9 +6,10 @@ import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select }
 type InProgressPanelProps = {
     appStatus: AppStatus;
     setAppStatus: any;
+    wrappedSetAppStatus: any;
 };
 
-const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStatus }) => {
+const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStatus, wrappedSetAppStatus }) => {
     const [selectedStream, setSelectedStream] = useState<string>("");
     const [target, setTarget] = useState("");
     const [timeUsed, setTimeUsed] = useState(0);
@@ -29,19 +30,19 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     }, [appStatus.curr_epoch]);
 
     const handleStart = () => {
-        console.log("handleStart", selectedStream, target)
         if (selectedStream && target !== "") {
-            setAppStatus((prevAppStatus: AppStatus) => ({
-                ...prevAppStatus,
+            const newStatus: AppStatus = {
+                curr_streams: appStatus.curr_streams,
+                archived_streams: appStatus.archived_streams,
                 curr_epoch: {
                     target,
                     start: new Date().toISOString(),
                     end: null,
                     endStatus: null,
-                } as Epoch
-            }))
+                } as Epoch,
+            }
+            setAppStatus(newStatus)
             setStarted(true);
-            console.log("app status after start", appStatus)
         }
     };
 
@@ -58,10 +59,12 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
         const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
         stream.epochs.push(newEpoch);
         
-        setAppStatus((prevAppStatus: AppStatus) => ({
-            ...prevAppStatus,
+        const newStatus: AppStatus = {
+            curr_streams: appStatus.curr_streams,
+            archived_streams: appStatus.archived_streams,
             curr_epoch: null,
-        } as AppStatus))
+        }
+        wrappedSetAppStatus(newStatus)
 
         setEpochStatus(null);
         setTarget("");
@@ -69,8 +72,6 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
         setSelectedStream("");
         setClickedEnd(false);
     }
-
-    console.log({ appStatus, epochStatus })
 
     useEffect(() => {
     }, [appStatus.curr_epoch]);

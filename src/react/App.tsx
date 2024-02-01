@@ -69,7 +69,7 @@ const App = () => {
       curr_streams: curr_streams,
       archived_streams: archived_streams,
     };
-    console.log("writing:", store)
+    console.log("writing:", curr_streams, archived_streams, store)
     window.dataApi.reqWriteData(store);
   }
 
@@ -96,7 +96,7 @@ const App = () => {
       >
         <VStack p="30px" >
           {/* <button onClick={reset}>rest</button> */}
-          <InProgressPanel appStatus={appStatus} setAppStatus={wrappedSetStatus}/>
+          <InProgressPanel appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={wrappedSetStatus}/>
           <StreamPanel appStatus={appStatus} setAppStatus={wrappedSetStatus} />
         </VStack>
       </Flex>

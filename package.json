@@ -19,7 +19,7 @@
     "cleanDist": "rm -rf dist build"
   },
   "build": {
-    "productName": "focus-helper",
+    "productName": "goal-forest",
     "appId": "com.mycompany|electron.myproductname",
     "directories": {
       "buildResources": "resources"

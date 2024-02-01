@@ -38,12 +38,12 @@ function createWindow () {
   });
 
   // Load our HTML file
-  // window.loadFile("app/dist/index.html");
+  // window.loadFile("src/dist/index.html");
   if (isDevelopment) {
     window.loadURL("http://localhost:40992");
   } else {
     console.log("prod");
-    window.loadFile("app/dist/index.html");
+    window.loadFile("src/dist/index.html");
   }
 }
 

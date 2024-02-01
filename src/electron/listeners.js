@@ -9,11 +9,14 @@ const writeData = async (data) => {
 
 const readData = async () => {
   const jsonFilePath = path.join(electron.app.getPath('userData'), 'focusrock_data.json');
+  console.log("jsonFilePath", jsonFilePath)
+  console.log("fs.existsSync(jsonFilePath)", fs.existsSync(jsonFilePath))
+  
   if (!fs.existsSync(jsonFilePath)) {
-    fs.writeFileSync(jsonFilePath, JSON.stringify([]));
+    return {}
   }
-
   const data = fs.readFileSync(jsonFilePath, 'utf8')
+  console.log("data:", data)
   return JSON.parse(data)
 }
 
