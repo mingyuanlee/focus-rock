@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Flex, HStack, VStack, Heading, Editable } from "@chakra-ui/react";
+import { Box, Button, Flex, HStack, VStack, Heading, Editable, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { useToast } from '@chakra-ui/react';
 import { Stream } from "./models/Stream";
 import { Epoch } from "./models/Epoch";
@@ -7,6 +7,8 @@ import { Store } from "./persistence/Store";
 import InProgressPanel from "./components/InProgressPanel";
 import StreamPanel from "./components/StreamPanel";
 import { read, write } from "original-fs";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import SummaryPanel from "./components/SummaryPanel";
 
 export interface AppStatus {
   curr_streams: Stream[];
@@ -27,6 +29,7 @@ const App = () => {
     curr_epoch: null,
   });
   const [error, setError] = useState(null);
+  const [selectedPanel, setSelectedPanel] = useState('Streams');
 
   const toast = useToast();
 
@@ -90,14 +93,60 @@ const App = () => {
   return (
       <Flex
         // height="100vh" // Full height of the viewport
-        alignItems="center" // Vertically centers content in the container
         justifyContent="center" // Horizontally centers content in the container
         className="App"
       >
-        <VStack p="30px" >
+        
+        <VStack py="30px" px="10px">
+          <Box width={"800px"} pb="20px">
+          <HStack spacing={5} justifyContent="space-between">
+      <Menu>
+        <MenuButton w="220px" as={Button} rightIcon={<ChevronDownIcon />}>
+          {selectedPanel}
+        </MenuButton>
+        <MenuList>
+          <MenuItem onClick={() => setSelectedPanel('Streams')}>Streams</MenuItem>
+          <MenuItem onClick={() => setSelectedPanel('Summary')}>Summary</MenuItem>
+          {/* Add more MenuItem as needed */}
+        </MenuList>
+      </Menu>
+
+      <Menu>
+        <MenuButton w="200px" as={Button} rightIcon={<ChevronDownIcon />}>
+          Language
+        </MenuButton>
+        <MenuList>
+          <MenuItem onClick={() => {}}>English</MenuItem>
+          {/* Add more MenuItem as needed */}
+        </MenuList>
+        
+      </Menu>
+
+      <Menu>
+        <MenuButton w="200px" as={Button} rightIcon={<ChevronDownIcon />}>
+          Mode
+        </MenuButton>
+        <MenuList>
+          <MenuItem onClick={() => {}}>Light</MenuItem>
+          {/* Add more MenuItem as needed */}
+        </MenuList>
+      </Menu>
+      </HStack>
+          </Box>
+          
           {/* <button onClick={reset}>rest</button> */}
-          <InProgressPanel appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={wrappedSetStatus}/>
+          {
+            selectedPanel === "Streams" && 
+            <Box>
+              <InProgressPanel appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={wrappedSetStatus}/>
           <StreamPanel appStatus={appStatus} setAppStatus={wrappedSetStatus} />
+            </Box>
+          }
+          {
+            selectedPanel === "Summary" &&
+            <SummaryPanel appStatus={appStatus} />
+          }
+          
         </VStack>
       </Flex>
   )
