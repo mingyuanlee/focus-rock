@@ -18,9 +18,6 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
 
     const [showCreate, setShowCreate] = useState(false);
     const [newTopic, setNewTopic] = useState("");
-//     const { isOpen, onOpen, onClose } = useDisclosure();
-// const [partitionName, setPartitionName] = useState("");
-// const [selectedTopic, setSelectedTopic] = useState("");
 
     const toast = useToast();
 
@@ -50,44 +47,6 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
         setNewTopic("");
     };
 
-
-
-//     const clickCreatePartition = (topic: string) => {
-//         onOpen();
-//   // Save the topic in state
-//   setSelectedTopic(topic);
-//     }
-
-//     const addPartition = () => {
-//         // Find the topic and insert the partition
-//         const topic = appStatus.curr_streams.find(stream => stream.topic === selectedTopic);
-//         topic.partitions.push({ name: partitionName, epochs: [] });
-//         setAppStatus(appStatus);
-//         // Close the modal
-//         onClose();
-//         setSelectedTopic("");
-//       };
-
-//       const archiveStream = (topic: string) => {
-//         // Find the stream to archive
-//         const streamToArchive = appStatus.curr_streams.find(stream => stream.topic === topic);
-      
-//         // Remove the stream from curr_streams
-//         const updatedCurrStreams = appStatus.curr_streams.filter(stream => stream.topic !== topic);
-      
-//         // Add the stream to archived_streams
-//         const updatedArchivedStreams = appStatus.archived_streams.concat(streamToArchive);
-      
-//         const newAppStatus: AppStatus = {
-//             curr_streams: updatedCurrStreams,
-//             archived_streams: updatedArchivedStreams,
-//             curr_epoch: appStatus.curr_epoch
-//         };
-
-//         // Update the state
-//         setAppStatus(newAppStatus);
-//       };
-
     return (
         <Card w="800px" mt="20px">
         <CardHeader>
@@ -97,6 +56,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
             <Box mb="30px">
             {showCreate ? (
                 <div>
+                    <form onSubmit={(e) => { e.preventDefault(); handleCreateStream(); }}>
                     <Input
                         type="text"
                         value={newTopic}
@@ -104,10 +64,12 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
                         placeholder="Enter a topic"
                         mb="15px"
                     />
-                    <Button width="120px" colorScheme={"blue"} onClick={handleCreateStream}>Create</Button>
+                    <Button width="120px" size="sm" colorScheme={"blue"} type="submit">Create</Button>
+                    <Button width="120px" size="sm"  colorScheme={"yellow"} marginLeft="4" onClick={() => { setShowCreate(false); setNewTopic("") }}>Cancel</Button>
+                    </form>
                 </div>
             ) : (
-                <Button colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
+                <Button size="sm" colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
             )}
             </Box>
             <Heading size="sm" mb="18px">Active Streams</Heading>

@@ -89,6 +89,19 @@ const addPartition = () => {
         }
     }
 
+    const removeEpoch = (streamTopic: string, partitionName: string, epochTarget: string) => {
+      const streamIndex = streams.findIndex(stream => stream.topic === streamTopic);
+      const partitionIndex = streams[streamIndex].partitions.findIndex(partition => partition.name === partitionName);
+      const updatedEpochs = streams[streamIndex].partitions[partitionIndex].epochs.filter(epoch => epoch.target !== epochTarget);
+      streams[streamIndex].partitions[partitionIndex].epochs = updatedEpochs;
+      const newStatus = {
+        curr_streams: type === "active" ? streams : appStatus.curr_streams,
+        archived_streams: type === "archived" ? streams : appStatus.archived_streams,
+        curr_epoch: appStatus.curr_epoch
+      }
+      setAppStatus(newStatus);
+    };
+
   return (
     <div>
       <Accordion defaultIndex={[]} allowMultiple>
@@ -138,15 +151,19 @@ const addPartition = () => {
               <ModalHeader>Add a new partition</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
+              <form onSubmit={(e) => { e.preventDefault(); addPartition(); }}>
                 <Input placeholder="Partition name" value={partitionName} onChange={(e) => setPartitionName(e.target.value)} />
-              </ModalBody>
-
-              <ModalFooter>
-                <Button colorScheme="blue" mr={3} onClick={addPartition}>
+                <ModalFooter>
+                <Button colorScheme="blue" mr={3} type="submit">
                   Add
                 </Button>
                 <Button variant="ghost" onClick={onClose}>Cancel</Button>
               </ModalFooter>
+              </form>
+              </ModalBody>
+
+              
+              
             </ModalContent>
           </Modal>
           </h3>
@@ -165,15 +182,16 @@ const addPartition = () => {
     {partition.epochs.map((epoch) => (
       <AccordionItem key={epoch.target}>
         <Box fontSize={"15px"} p="5px" display="flex" justifyContent="space-between">
-          <Box width="280px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
+          <Box width="240px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
           <Box width="180px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
             {new Date(epoch.start).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} {" - "} 
             {epoch.end ? new Date(epoch.end).toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : 'Ongoing'}
           </Box>
-          <Box width="140px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
+          <Box width="180px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
             <Tag variant='solid' colorScheme={getColor(EndStatus[epoch.endStatus].toLowerCase())}>
               {EndStatus[epoch.endStatus].toLowerCase()}
             </Tag>
+            <Button size="sm" colorScheme="red" marginLeft="4" onClick={() => removeEpoch(stream.topic, partition.name, epoch.target)}>Remove</Button>
           </Box>
         </Box>
       </AccordionItem>
