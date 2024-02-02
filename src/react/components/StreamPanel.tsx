@@ -1,8 +1,9 @@
-import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Tag } from "@chakra-ui/react";
+import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Tag, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from "@chakra-ui/react";
 import { AppStatus } from "../App";
 import { useState } from "react";
 import { Stream } from "../models/Stream";
 import { EndStatus } from "../models/Epoch";
+import AccordianList from "./AccordianList";
 
 
 interface StreamPanelProps {
@@ -17,6 +18,10 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
 
     const [showCreate, setShowCreate] = useState(false);
     const [newTopic, setNewTopic] = useState("");
+//     const { isOpen, onOpen, onClose } = useDisclosure();
+// const [partitionName, setPartitionName] = useState("");
+// const [selectedTopic, setSelectedTopic] = useState("");
+
     const toast = useToast();
 
     const handleCreateStream = () => {
@@ -33,7 +38,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
 
         const newStream: Stream = { 
             topic: newTopic,
-            epochs: [],
+            partitions: [],
             archived: false
         };
         const newAppStatus: AppStatus = {
@@ -45,21 +50,46 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
         setNewTopic("");
     };
 
-    const getColor = (status: string) => {
-        switch (status) {
-            case 'finished':
-                return 'green';
-            case 'unfinished':
-                return 'yellow';
-            case 'interrupted':
-                return 'red';
-            default:
-                return 'gray';
-        }
-    }
+
+
+//     const clickCreatePartition = (topic: string) => {
+//         onOpen();
+//   // Save the topic in state
+//   setSelectedTopic(topic);
+//     }
+
+//     const addPartition = () => {
+//         // Find the topic and insert the partition
+//         const topic = appStatus.curr_streams.find(stream => stream.topic === selectedTopic);
+//         topic.partitions.push({ name: partitionName, epochs: [] });
+//         setAppStatus(appStatus);
+//         // Close the modal
+//         onClose();
+//         setSelectedTopic("");
+//       };
+
+//       const archiveStream = (topic: string) => {
+//         // Find the stream to archive
+//         const streamToArchive = appStatus.curr_streams.find(stream => stream.topic === topic);
+      
+//         // Remove the stream from curr_streams
+//         const updatedCurrStreams = appStatus.curr_streams.filter(stream => stream.topic !== topic);
+      
+//         // Add the stream to archived_streams
+//         const updatedArchivedStreams = appStatus.archived_streams.concat(streamToArchive);
+      
+//         const newAppStatus: AppStatus = {
+//             curr_streams: updatedCurrStreams,
+//             archived_streams: updatedArchivedStreams,
+//             curr_epoch: appStatus.curr_epoch
+//         };
+
+//         // Update the state
+//         setAppStatus(newAppStatus);
+//       };
 
     return (
-        <Card w="800px">
+        <Card w="800px" mt="20px">
         <CardHeader>
             <Heading size='md'>Streams</Heading>
         </CardHeader>
@@ -80,48 +110,11 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
                 <Button colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
             )}
             </Box>
-            <Accordion defaultIndex={[0]} allowMultiple>
-                <AccordionItem>
-                    <h2>
-                        <AccordionButton>
-                            <AccordionIcon />
-                            Current Streams
-                        </AccordionButton>
-                    </h2>
-                    <AccordionPanel>
-                        {/* Render the current streams */}
-                        {appStatus.curr_streams.length === 0 && <Box>No streams yet.</Box>}
-                        {appStatus.curr_streams.map((stream, i) => (
-                            <AccordionItem key={i}>
-                                <h3>
-                                    <AccordionButton>
-                                        <AccordionIcon />
-                                        {stream.topic}
-                                    </AccordionButton>
-                                </h3>
-                                <AccordionPanel>
-                                    {/* Render the epochs for each stream */}
-                                    {stream.epochs.map((epoch) => (
-                                        <AccordionItem key={epoch.target}>
-                                        <Box fontSize={"15px"} p="5px" display="flex" justifyContent="space-between">
-    <Box width="280px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
-    <Box width="180px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
-    {new Date(epoch.start).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} {" - "} 
-    {epoch.end ? new Date(epoch.end).toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : 'Ongoing'}
-</Box>
-    <Box width="140px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
-        <Tag variant='solid' colorScheme={getColor(EndStatus[epoch.endStatus].toLowerCase())}>
-        {EndStatus[epoch.endStatus].toLowerCase()}
-    </Tag></Box>
-</Box>
-                                        </AccordionItem>
-                                    ))}
-                                </AccordionPanel>
-                            </AccordionItem>
-                        ))}
-                    </AccordionPanel>
-                </AccordionItem>
-            </Accordion>
+            <Heading size="sm" mb="18px">Active Streams</Heading>
+            <AccordianList streams={appStatus.curr_streams} appStatus={appStatus} setAppStatus={setAppStatus} type="active" />
+
+            <Heading size="sm" my="18px">Archived Streams</Heading>
+            <AccordianList streams={appStatus.archived_streams} appStatus={appStatus} setAppStatus={setAppStatus} type="archived" />
         </CardBody>
         </Card>
     );

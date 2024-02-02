@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AppStatus } from "../App";
 import { EndStatus, Epoch } from "../models/Epoch";
-import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select } from "@chakra-ui/react";
+import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select, HStack } from "@chakra-ui/react";
 
 type InProgressPanelProps = {
     appStatus: AppStatus;
@@ -11,6 +11,7 @@ type InProgressPanelProps = {
 
 const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStatus, wrappedSetAppStatus }) => {
     const [selectedStream, setSelectedStream] = useState<string>("");
+    const [selectedPartition, setSelectedPartition] = useState<string>("");
     const [target, setTarget] = useState("");
     const [timeUsed, setTimeUsed] = useState(0);
     const [epochStatus, setEpochStatus] = useState<EndStatus | null>(null);
@@ -57,7 +58,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
             endStatus: status,
         }
         const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
-        stream.epochs.push(newEpoch);
+        stream.partitions.find((partition) => partition.name === selectedPartition).epochs.push(newEpoch);
         
         const newStatus: AppStatus = {
             curr_streams: appStatus.curr_streams,
@@ -77,12 +78,13 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     }, [appStatus.curr_epoch]);
 
     return (
-        <Card w="800px" h="270px">
+        <Card w="800px">
         <CardHeader>
             <Heading size='md'>In Progress</Heading>
         </CardHeader>
         { appStatus.curr_epoch === null &&
             <CardBody>
+                <HStack spacing={3}>
                 <Select
                     value={selectedStream}
                     onChange={(e) => {
@@ -99,6 +101,24 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                         </option>
                     ))}
                 </Select>
+                <Select
+  value={selectedPartition}
+  onChange={(e) => {
+    const selectedPartitionName = e.target.value;
+    setSelectedPartition(selectedPartitionName);
+  }}
+  mb="10px"
+>
+  <option value="">Select a partition</option>
+  {
+    appStatus.curr_streams.find(stream => stream.topic === selectedStream)?.partitions.map((partition, i) => (
+      <option key={i} value={partition.name}>
+        {partition.name}
+      </option>
+    ))
+  }
+</Select>
+                </HStack>
                 <Input
                     type="text"
                     value={target}
@@ -107,7 +127,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                     mb="30px"
                 />
                 <Box display={"flex"} justifyContent={"center"}>
-                <Button colorScheme='blue' onClick={handleStart}>Start An Epoch</Button>
+                <Button colorScheme='blue' onClick={handleStart} mb="20px">Start An Epoch</Button>
                 </Box>
                 
             </CardBody>
