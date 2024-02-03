@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { AppStatus } from "../App";
-import TimeChart from "./TimeChart";
+import TimeChart, { TimeInterval } from "./TimeChart";
+import { useEffect, useState } from "react";
 
 type SummaryPanelProps = {
   appStatus: AppStatus;
@@ -8,26 +9,42 @@ type SummaryPanelProps = {
 
 const SummaryPanel: React.FC<SummaryPanelProps> = ({ appStatus }) => {
 
-  let data = {
-    "2020-01-02": [
-      { start: "2020-01-02T09:17:00", end: "2020-01-02T11:00:00", stream: "stream1", goal: "goal1" },
-      { start: "2020-01-02T12:00:00", end: "2020-01-02T12:22:00", stream: "stream2", goal: "goal2" },
-    ],
-    "2020-01-01": [
-      { start: "2020-01-01T10:00:00", end: "2020-01-01T11:00:00", stream: "stream1", goal: "goal1" },
-      { start: "2020-01-01T12:00:00", end: "2020-01-01T13:00:00", stream: "stream2", goal: "goal2" },
-    ]
+  const [data, setData] = useState<{ [key: string]: TimeInterval[] }>({});
+
+  const makeData = () => {
+    const newData: { [key: string]: TimeInterval[] } = {};
+  
+    // Assuming appStatus.curr_streams and appStatus.archived_streams are arrays
+    const allStreams = [...appStatus.curr_streams, ...appStatus.archived_streams];
+  
+    allStreams.forEach(stream => {
+      stream.partitions.forEach(partition => {
+        partition.epochs.forEach(epoch => {
+          const startDate = new Date(epoch.start).toLocaleString().split(',')[0];
+  
+          const interval: TimeInterval = {
+            start: epoch.start,
+            end: epoch.end,
+            stream: stream.topic,
+            goal: epoch.target,
+          };
+  
+          // Assuming the same date is used for start and end
+          if (newData[startDate]) {
+            newData[startDate].push(interval);
+          } else {
+            newData[startDate] = [interval];
+          }
+        });
+      });
+    });
+  
+    setData(newData);
   };
-  
-  for (let i = 2; i < 15; i++) {
-    const date = new Date(2020, 0, 2 - i); // subtract i days from 2020-01-02
-    const dateString = date.toISOString().split('T')[0]; // format date as "YYYY-MM-DD"
-  
-    data[dateString as keyof typeof data] = [
-      { start: `${dateString}T09:17:00`, end: `${dateString}T11:00:00`, stream: `stream${i+1}`, goal: `goal${i+1}` },
-      { start: `${dateString}T12:00:00`, end: `${dateString}T12:22:00`, stream: `stream${i+1}`, goal: `goal${i+1}` },
-    ];
-  }
+
+  useEffect(() => {
+    makeData();
+  }, [appStatus]);
 
   return (
     <Box>

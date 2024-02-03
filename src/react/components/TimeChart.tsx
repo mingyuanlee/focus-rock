@@ -1,9 +1,9 @@
-import { Box, Card, HStack, Heading, Tooltip, VStack } from '@chakra-ui/react';
+import { Box, Card, Flex, HStack, Heading, Spinner, Tooltip, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { format, getDay } from 'date-fns';
 import { buildColorMap } from '../utils/colors';
 
-interface TimeInterval {
+export interface TimeInterval {
     start: string;
     end: string;
     stream: string;
@@ -19,6 +19,7 @@ interface ColumnBox {
     color: string;
     hoverText: string;
     showBorder: "bottom" | "top" | "none";
+    stream: string;
 }
 
 interface Column {
@@ -44,6 +45,7 @@ const config = {
 const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
     const [colorMap, setColorMap] = useState<{ [key: string]: string }>({});
+    const [isLoading, setIsLoading] = useState(true);
 
     /* 
     */
@@ -67,6 +69,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
                 color: config.blankBoxColor,
                 hoverText: "idle time",
                 showBorder: "bottom",
+                stream: ""
             });
         }
     
@@ -77,6 +80,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
                 color: config.blankBoxColor,
                 hoverText: "idle time",
                 showBorder: "none",
+                stream: ""
             });
         }
     
@@ -84,6 +88,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
     }
 
     const makeBoxesForCol = (date: string) => {
+        console.log("makeBoxesForCol", colorMap)
         const intervals = data[date];
         const boxes: ColumnBox[] = [];
         const len = intervals.length;
@@ -108,8 +113,9 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             boxes.push({
                 height,
                 color: colorMap[interval.stream] || "black", // should never be black
-                hoverText: `${interval.goal}`,
+                hoverText: `${interval.stream}: ${interval.goal}`,
                 showBorder: "none",
+                stream: interval.stream
             });
             const nextStartInMinutes = i < len - 1 ? new Date(intervals[i + 1].start).getHours() * 60 + new Date(intervals[i + 1].start).getMinutes() : 1440;
             const nextStartInPx = Math.floor(nextStartInMinutes / 3);
@@ -131,6 +137,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
                 color: config.blankBoxColor,
                 hoverText: "idle time",
                 showBorder: "bottom",
+                stream: ""
             });
     
             currentStart = currentEnd;
@@ -144,13 +151,19 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
         const streamLabels = Array.from(new Set(Object.values(data).flatMap((intervals) => intervals.map((interval) => interval.stream))));
         const colorMap = buildColorMap(streamLabels);
         setColorMap(colorMap);
+        console.log("colorMap", colorMap);
 
-        const cols: Column[] = []
+            const cols: Column[] = []
         for (const date in data) {
             cols.push({ date: null, boxes: null, type: "thin" });
             cols.push({ date, boxes: makeBoxesForCol(date), type: "normal" });
         }
+
+        cols.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
         setColumns(cols);
+        setIsLoading(false);
+        
     }
 
     function formatWithOrdinal(date: Date) {
@@ -167,12 +180,20 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
     }
 
     useEffect(() => {
+        console.log("use effect", data);
         makeColumns();
     }, [data]);
+
 
     // Render the TimeChart component here
     return (<Card py="40px" px="20px" width={"800px"}>
         <Heading as="h3" size="md" textAlign={"center"} mb="40px">Time Usage</Heading>
+        
+        { columns.length === 0 && <Flex width="100%" justifyContent="center" alignItems="center" height="400px">
+            Currently no data
+            </Flex>}
+        { columns.length > 0 && (
+        
         <HStack>
             <Box height={"520px"} display="flex">
             <Box width="80px" height={"480px"} bg={"white"}>
@@ -197,7 +218,11 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
         
         <Box style={{ overflowX: 'auto' }}>
             <Box display="flex">
-                {columns.map((column, index) => (
+            { isLoading && <Flex width="600px" justifyContent="center" alignItems="center" height="100vh">
+            <Spinner />
+        </Flex> }
+            { !isLoading && 
+                columns.map((column, index) => (
                     <Box key={index}>
                         { column.type === "thin" && (
                             <Box width="20px" height={"480px"} bg={"white"}>
@@ -221,15 +246,12 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                                         <Box 
                                             borderBottom={box.showBorder === "bottom" ? config.dashlineStyle : "none"} 
                                             borderTop={box.showBorder === "top" ? config.dashlineStyle : "none"}
-                                            width="100%" key={index} height={`${box.height}px`} bg={box.color} title={box.hoverText}>
+                                            width="100%" key={index} height={`${box.height}px`} bg={box.stream === "" ? box.color : colorMap[box.stream]} title={box.hoverText}>
                                             
                                             </Box>
                                         </Tooltip>
                                     ))
                                 }
-                                {/* <Box {...config.dateStyle} width="100%" height="40px" pt="10px" bg="white" textAlign={"center"}>
-                                {new Date(column.date).toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' })}
-                                </Box> */}
                                 <Box {...config.dateStyle} width="100%" height="40px" pt="10px" bg="white" textAlign={"center"}>
     {formatWithOrdinal(new Date(column.date))}
 </Box>
@@ -239,7 +261,7 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                 ))}
             </Box>
             </Box>
-        </HStack>
+        </HStack>)}
         
         </Card>);
 };
