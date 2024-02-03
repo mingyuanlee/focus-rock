@@ -1,5 +1,7 @@
 import { Stream } from "../models/Stream";
 
+// TODO: write unit tests for these two functions when have time
+
 export const checkConflicts = (streams1: Stream[], streams2: Stream[]) => {
     for (const stream1 of streams1) {
         for (const partition1 of stream1.partitions) {

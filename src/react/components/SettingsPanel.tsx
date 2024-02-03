@@ -29,15 +29,16 @@ const SettingsPanel = ({ appStatus, wrappedSetAppStatus }: SettingsPanelProps) =
                 }
     
                 if (importOption === "Replace") {
+
+                    // TODO: add confirm dialog here, because gonna delete old data
+
                     const newAppStatus: AppStatus = {
                         curr_streams: store.curr_streams,
                         archived_streams: store.archived_streams,
                         curr_epoch: appStatus.curr_epoch
                     }
                     wrappedSetAppStatus(newAppStatus);
-                }
-
-                if (importOption === "Merge") {
+                } else if (importOption === "Merge") {
                     // check if there are any conflicted epochs
                     const hasConflicts = checkConflicts(appStatus.curr_streams, store.curr_streams)
                     || checkConflicts(appStatus.archived_streams, store.archived_streams);
@@ -63,6 +64,16 @@ const SettingsPanel = ({ appStatus, wrappedSetAppStatus }: SettingsPanelProps) =
                     }
                     wrappedSetAppStatus(newAppStatus);
                 }
+
+                toast({
+                    title: 'Success',
+                    description: 'Data imported successfully.',
+                    status: 'success',
+                    duration: 9000,
+                    isClosable: true,
+                });
+
+                setImportFile(null);
                 
             } catch (error) {
                 toast({
@@ -86,27 +97,6 @@ const SettingsPanel = ({ appStatus, wrappedSetAppStatus }: SettingsPanelProps) =
         };
     
         reader.readAsText(file);
-        // try {
-        //     const store: Store = JSON.parse(content);
-    
-        //     if (!Array.isArray(store.curr_streams) || !Array.isArray(store.archived_streams)) {
-        //         throw new Error('Invalid format');
-        //     }
-    
-        //     setAppStatus(prevStatus => ({
-        //         ...prevStatus,
-        //         curr_streams: store.curr_streams,
-        //         archived_streams: store.archived_streams,
-        //     }));
-        // } catch (error) {
-        //     toast({
-        //         title: 'Error',
-        //         description: 'The format of the file content is wrong.',
-        //         status: 'error',
-        //         duration: 9000,
-        //         isClosable: true,
-        //     });
-        // }
     };
 
     const handleImportOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
