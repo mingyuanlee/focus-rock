@@ -1,6 +1,7 @@
-import { Box, Card, HStack, Heading, VStack } from '@chakra-ui/react';
+import { Box, Card, HStack, Heading, Tooltip, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { format, getDay } from 'date-fns';
+import { buildColorMap } from '../utils/colors';
 
 interface TimeInterval {
     start: string;
@@ -42,7 +43,7 @@ const config = {
 
 const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
-    
+    const [colorMap, setColorMap] = useState<{ [key: string]: string }>({});
 
     /* 
     */
@@ -64,7 +65,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             boxes.push({
                 height: fullBoxHeight,
                 color: config.blankBoxColor,
-                hoverText: "",
+                hoverText: "idle time",
                 showBorder: "bottom",
             });
         }
@@ -74,7 +75,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             boxes.push({
                 height: remainingBoxHeight,
                 color: config.blankBoxColor,
-                hoverText: "",
+                hoverText: "idle time",
                 showBorder: "none",
             });
         }
@@ -106,8 +107,8 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             const height = endInPx - startInPx;
             boxes.push({
                 height,
-                color: "green",
-                hoverText: ``,
+                color: colorMap[interval.stream] || "black", // should never be black
+                hoverText: `${interval.goal}`,
                 showBorder: "none",
             });
             const nextStartInMinutes = i < len - 1 ? new Date(intervals[i + 1].start).getHours() * 60 + new Date(intervals[i + 1].start).getMinutes() : 1440;
@@ -128,7 +129,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             boxes.push({
                 height: currentEnd - currentStart,
                 color: config.blankBoxColor,
-                hoverText: "",
+                hoverText: "idle time",
                 showBorder: "bottom",
             });
     
@@ -140,6 +141,10 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
     
 
     const makeColumns = () => {
+        const streamLabels = Array.from(new Set(Object.values(data).flatMap((intervals) => intervals.map((interval) => interval.stream))));
+        const colorMap = buildColorMap(streamLabels);
+        setColorMap(colorMap);
+
         const cols: Column[] = []
         for (const date in data) {
             cols.push({ date: null, boxes: null, type: "thin" });
@@ -212,10 +217,14 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                             <Box width="80px" height={"520px"} bg="green">
                                 {
                                     column.boxes?.map((box, index) => (
+                                        <Tooltip label={box.hoverText} key={index}>
                                         <Box 
                                             borderBottom={box.showBorder === "bottom" ? config.dashlineStyle : "none"} 
                                             borderTop={box.showBorder === "top" ? config.dashlineStyle : "none"}
-                                            width="100%" key={index} height={`${box.height}px`} bg={box.color} title={box.hoverText}></Box>
+                                            width="100%" key={index} height={`${box.height}px`} bg={box.color} title={box.hoverText}>
+                                            
+                                            </Box>
+                                        </Tooltip>
                                     ))
                                 }
                                 {/* <Box {...config.dateStyle} width="100%" height="40px" pt="10px" bg="white" textAlign={"center"}>

@@ -21,3 +21,7 @@ to develop
 
 to build
 `npm run dist-mac`
+
+
+
+the number of streams cannot exceed 500
