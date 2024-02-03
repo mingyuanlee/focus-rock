@@ -69,7 +69,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
                     </form>
                 </div>
             ) : (
-                <Button size="sm" colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
+                <Button colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
             )}
             </Box>
             <Heading size="sm" mb="18px">Active Streams</Heading>

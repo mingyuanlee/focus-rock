@@ -155,13 +155,18 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
             const cols: Column[] = []
         for (const date in data) {
-            cols.push({ date: null, boxes: null, type: "thin" });
             cols.push({ date, boxes: makeBoxesForCol(date), type: "normal" });
         }
 
         cols.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-        setColumns(cols);
+        const allCols: Column[] = []
+        cols.forEach((col, index) => {
+            allCols.push({ date: null, boxes: null, type: "thin" })
+            allCols.push(col)
+        })
+
+        setColumns(allCols);
         setIsLoading(false);
         
     }

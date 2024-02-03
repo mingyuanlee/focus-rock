@@ -9,6 +9,7 @@ import StreamPanel from "./components/StreamPanel";
 import { read, write } from "original-fs";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import SummaryPanel from "./components/SummaryPanel";
+import SettingsPanel from "./components/SettingsPanel";
 
 export interface AppStatus {
   curr_streams: Stream[];
@@ -29,7 +30,7 @@ const App = () => {
     curr_epoch: null,
   });
   const [error, setError] = useState(null);
-  const [selectedPanel, setSelectedPanel] = useState('Summary');
+  const [selectedPanel, setSelectedPanel] = useState('Settings');
 
   const toast = useToast();
 
@@ -105,8 +106,9 @@ const App = () => {
           {selectedPanel}
         </MenuButton>
         <MenuList>
-          <MenuItem onClick={() => setSelectedPanel('Streams')}>Streams</MenuItem>
-          <MenuItem onClick={() => setSelectedPanel('Summary')}>Summary</MenuItem>
+          <MenuItem onClick={() => setSelectedPanel('Streams')}>Streams Panel</MenuItem>
+          <MenuItem onClick={() => setSelectedPanel('Summary')}>Summary Panel</MenuItem>
+          <MenuItem onClick={() => setSelectedPanel('Settings')}>Settings Panel</MenuItem>
           {/* Add more MenuItem as needed */}
         </MenuList>
       </Menu>
@@ -146,7 +148,10 @@ const App = () => {
             selectedPanel === "Summary" &&
             <SummaryPanel appStatus={appStatus} />
           }
-          
+          {
+            selectedPanel === "Settings" &&
+            <SettingsPanel appStatus={appStatus} wrappedSetAppStatus={wrappedSetStatus} />
+          }
         </VStack>
       </Flex>
   )
