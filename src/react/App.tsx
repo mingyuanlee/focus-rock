@@ -29,7 +29,7 @@ const App = () => {
     curr_epoch: null,
   });
   const [error, setError] = useState(null);
-  const [selectedPanel, setSelectedPanel] = useState('Streams');
+  const [selectedPanel, setSelectedPanel] = useState('Summary');
 
   const toast = useToast();
 
