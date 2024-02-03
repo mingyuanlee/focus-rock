@@ -134,7 +134,7 @@ const App = () => {
       </HStack>
           </Box>
           
-          <button onClick={reset}>rest</button>
+          {/* <button onClick={reset}>rest</button> */}
           {
             selectedPanel === "Streams" && 
             <Box>
