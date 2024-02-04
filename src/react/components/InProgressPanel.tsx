@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AppStatus } from "../App";
 import { EndStatus, Epoch } from "../models/Epoch";
-import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select, HStack } from "@chakra-ui/react";
+import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select, HStack, useToast } from "@chakra-ui/react";
 
 type InProgressPanelProps = {
     appStatus: AppStatus;
@@ -17,6 +17,8 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     const [epochStatus, setEpochStatus] = useState<EndStatus | null>(null);
     const [clickedEnd, setClickedEnd] = useState(false);
     const [started, setStarted] = useState(false);
+
+    const toast = useToast();
     
     useEffect(() => {
         if (appStatus.curr_epoch && appStatus.curr_epoch.start) {
@@ -46,6 +48,33 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
             setStarted(true);
         }
     };
+
+    const handleSchedule = () => {
+        if (selectedStream && target !== "") {
+            const newEpoch: Epoch = {
+                target,
+                start: null,
+                end: null,
+                endStatus: EndStatus.TODO,
+            }
+            const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
+            const partition = stream.partitions.find((partition) => partition.name === selectedPartition);
+            partition.epochs.push(newEpoch);
+            const newStatus: AppStatus = {
+                curr_streams: appStatus.curr_streams,
+                archived_streams: appStatus.archived_streams,
+                curr_epoch: null,
+            }
+            wrappedSetAppStatus(newStatus)
+            toast({
+                title: "Epoch scheduled.",
+                description: "A new epoch has been added to the schedule.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    }
 
     const handleEndEpoch = () => {
         setClickedEnd(true);
@@ -128,6 +157,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                 />
                 <Box display={"flex"} justifyContent={"center"}>
                 <Button colorScheme='blue' onClick={handleStart} mb="20px">Start An Epoch</Button>
+                <Button colorScheme='yellow' onClick={handleSchedule} ml="10px" mb="20px">Schedule For Later</Button>
                 </Box>
                 
             </CardBody>
@@ -154,3 +184,4 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
 };
 
 export default InProgressPanel;
+

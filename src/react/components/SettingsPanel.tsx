@@ -1,8 +1,9 @@
-import { Box, Button, Card, CardBody, CardHeader, Heading, Select, useToast } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, CardHeader, Heading, Input, Select, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { AppStatus } from "../App";
 import { Store } from "../persistence/Store";
 import { checkConflicts, mergeStreams } from "../utils/sync";
+import React from "react";
 
 interface SettingsPanelProps {
     appStatus: AppStatus;
@@ -141,10 +142,7 @@ const SettingsPanel = ({ appStatus, wrappedSetAppStatus }: SettingsPanelProps) =
             </CardHeader>
             <CardBody>
             <Box>
-                <Heading mb="20px" size="md">Imports</Heading>
-
-                
-                    
+                <Heading mb="20px" size="md">Imports</Heading>        
                     <Box mt={2}>
                         <Box
                             border="2px dashed gray"

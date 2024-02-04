@@ -30,7 +30,7 @@ const App = () => {
     curr_epoch: null,
   });
   const [error, setError] = useState(null);
-  const [selectedPanel, setSelectedPanel] = useState('Settings');
+  const [selectedPanel, setSelectedPanel] = useState('Streams');
 
   const toast = useToast();
 

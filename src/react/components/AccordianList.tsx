@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stream } from '../models/Stream';
-
-import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Tag, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from "@chakra-ui/react";
+import { DeleteIcon, AddIcon, PlusSquareIcon, ArrowForwardIcon, RepeatIcon } from "@chakra-ui/icons";
+import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Tag, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure, Tooltip } from "@chakra-ui/react";
 import { AppStatus } from "../App";
 import { useState } from "react";
 import { EndStatus } from "../models/Epoch";
@@ -80,6 +80,8 @@ const addPartition = () => {
         switch (status) {
             case 'finished':
                 return 'green';
+            case 'todo':
+                  return 'green';
             case 'unfinished':
                 return 'yellow';
             case 'interrupted':
@@ -102,6 +104,14 @@ const addPartition = () => {
       setAppStatus(newStatus);
     };
 
+    const startEpoch = (streamTopic: string, partitionName: string, epochTarget: string) => {
+      // TODO
+    }
+
+    const resumeEpoch = (streamTopic: string, partitionName: string, epochTarget: string) => {
+      // TODO
+    }
+
   return (
     <div>
       <Accordion defaultIndex={[]} allowMultiple>
@@ -116,21 +126,27 @@ const addPartition = () => {
           {stream.topic}
           {
             type === "active" && <Box marginLeft="auto">
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={() => clickCreatePartition(stream.topic)}
-            >
-              Add Partition
-            </Button>
-            <Button
-              size="sm"
-              colorScheme="yellow"
-              marginLeft="4"
-              onClick={() => archiveStream(stream.topic)}
-            >
-              Archive
-            </Button>
+            <Tooltip label="Add Partition" aria-label="A tooltip">
+    <Button
+        size="sm"
+        colorScheme="blue"
+        width="60px"
+        onClick={() => clickCreatePartition(stream.topic)}
+    >
+        <AddIcon />
+    </Button>
+</Tooltip>
+<Tooltip label="Archive" aria-label="A tooltip">
+    <Button
+        size="sm"
+        colorScheme="yellow"
+        marginLeft="2"
+        width="60px"
+        onClick={() => archiveStream(stream.topic)}
+    >
+        <PlusSquareIcon />
+    </Button>
+</Tooltip>
           </Box>
           }
           {
@@ -181,17 +197,39 @@ const addPartition = () => {
     {/* Render the epochs for each partition */}
     {partition.epochs.map((epoch) => (
       <AccordionItem key={epoch.target}>
-        <Box fontSize={"15px"} p="5px" display="flex" justifyContent="space-between">
-          <Box width="240px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
-          <Box width="180px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+        <Box fontSize={"15px"} p="5px" display="flex" justifyContent="space-between" alignItems="center">
+          <Box width="290px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">{epoch.target}</Box>
+          <Box width="170px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+            { epoch.start && <span>
             {new Date(epoch.start).toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} {" - "} 
-            {epoch.end ? new Date(epoch.end).toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : 'Ongoing'}
+            {epoch.end ? new Date(epoch.end).toLocaleString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : 'Ongoing'}</span> }
+            { !epoch.start && "scheduled"}
           </Box>
-          <Box width="180px" overflow="hidden" textAlign={"right"} textOverflow="ellipsis" whiteSpace="nowrap">
+          <Box width="200px" display={"flex"} justifyContent={"right"} overflow="hidden" textAlign={"right"} alignItems="center" textOverflow="ellipsis" whiteSpace="nowrap">
             <Tag variant='solid' colorScheme={getColor(EndStatus[epoch.endStatus].toLowerCase())}>
               {EndStatus[epoch.endStatus].toLowerCase()}
             </Tag>
-            <Button size="sm" colorScheme="red" marginLeft="4" onClick={() => removeEpoch(stream.topic, partition.name, epoch.target)}>Remove</Button>
+          {
+            (epoch.endStatus === EndStatus.UNFINISHED || epoch.endStatus === EndStatus.INTERRUPTED) &&
+<Tooltip label="Resume" aria-label="A tooltip">
+        <Button size="sm" colorScheme="blue" marginLeft="2" onClick={() => resumeEpoch(stream.topic, partition.name, epoch.target)}>
+            <RepeatIcon />
+        </Button>
+    </Tooltip>
+          }
+            
+    {
+      epoch.endStatus === EndStatus.TODO &&
+      <Tooltip label="Start" aria-label="A tooltip">
+              <Button size="sm" colorScheme="blue" marginLeft="2" onClick={() => startEpoch(stream.topic, partition.name, epoch.target)}>
+                  <ArrowForwardIcon />
+              </Button>
+          </Tooltip>
+    }
+            
+            <Tooltip label="Remove" aria-label="A tooltip">
+            <Button size="sm" colorScheme="red" marginLeft="2" onClick={() => removeEpoch(stream.topic, partition.name, epoch.target)}><DeleteIcon /></Button>
+              </Tooltip>
           </Box>
         </Box>
       </AccordionItem>
