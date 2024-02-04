@@ -73,10 +73,10 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
             )}
             </Box>
             <Heading size="sm" mb="18px">Active Streams</Heading>
-            <AccordianList streams={appStatus.curr_streams} appStatus={appStatus} setAppStatus={setAppStatus} type="active" />
+            <AccordianList streams={appStatus.curr_streams} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="active" />
 
             <Heading size="sm" my="18px">Archived Streams</Heading>
-            <AccordianList streams={appStatus.archived_streams} appStatus={appStatus} setAppStatus={setAppStatus} type="archived" />
+            <AccordianList streams={appStatus.archived_streams} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="archived" />
         </CardBody>
         </Card>
     );

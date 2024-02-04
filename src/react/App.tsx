@@ -15,6 +15,10 @@ export interface AppStatus {
   curr_streams: Stream[];
   archived_streams: Stream[];
   curr_epoch: Epoch | null;
+
+  selectedStream?: string;
+  selectedPartition?: string;
+  needToReplace?: boolean; // for resume and start scheduled epoch, replace instead of pushing new
 }
 
 declare global {

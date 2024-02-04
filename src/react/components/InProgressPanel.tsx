@@ -14,9 +14,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     const [selectedPartition, setSelectedPartition] = useState<string>("");
     const [target, setTarget] = useState("");
     const [timeUsed, setTimeUsed] = useState(0);
-    const [epochStatus, setEpochStatus] = useState<EndStatus | null>(null);
     const [clickedEnd, setClickedEnd] = useState(false);
-    const [started, setStarted] = useState(false);
 
     const toast = useToast();
     
@@ -45,7 +43,6 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                 } as Epoch,
             }
             setAppStatus(newStatus)
-            setStarted(true);
         }
     };
 
@@ -55,7 +52,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                 target,
                 start: null,
                 end: null,
-                endStatus: EndStatus.TODO,
+                endStatus: EndStatus.FINISHED,
             }
             const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
             const partition = stream.partitions.find((partition) => partition.name === selectedPartition);
@@ -86,8 +83,17 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
             end: new Date().toISOString(),
             endStatus: status,
         }
-        const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
-        stream.partitions.find((partition) => partition.name === selectedPartition).epochs.push(newEpoch);
+
+        const streamName = selectedStream ? selectedStream : appStatus.selectedStream;
+        const stream = appStatus.curr_streams.find((stream) => stream.topic === streamName);
+        const partitionName = selectedPartition ? selectedPartition : appStatus.selectedPartition;
+        if (appStatus.needToReplace) {
+            const partition = stream.partitions.find((partition) => partition.name === partitionName);
+            partition.epochs = partition.epochs.map((epoch) => epoch.target === newEpoch.target ? newEpoch : epoch);
+            console.log("replaced:", partition)
+        } else {
+            stream.partitions.find((partition) => partition.name === partitionName).epochs.push(newEpoch);
+        }
         
         const newStatus: AppStatus = {
             curr_streams: appStatus.curr_streams,
@@ -96,7 +102,6 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
         }
         wrappedSetAppStatus(newStatus)
 
-        setEpochStatus(null);
         setTarget("");
         setTimeUsed(0);
         setSelectedStream("");
