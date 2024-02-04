@@ -4,6 +4,7 @@ import { AppStatus } from "../App";
 import { Store } from "../persistence/Store";
 import { checkConflicts, mergeStreams } from "../utils/sync";
 import React from "react";
+import { GlobalConfig } from "../GlobalConfig";
 
 interface SettingsPanelProps {
     appStatus: AppStatus;
@@ -136,7 +137,7 @@ const SettingsPanel = ({ appStatus, wrappedSetAppStatus }: SettingsPanelProps) =
     };
 
     return (
-        <Card w="800px" mt="20px">
+        <Card w={GlobalConfig.panelWidth} mt="20px">
             <CardHeader>
             <Heading size='md'>Data Imports & Exports</Heading>
             </CardHeader>

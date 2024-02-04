@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Stream } from "../models/Stream";
 import { EndStatus } from "../models/Epoch";
 import AccordianList from "./AccordianList";
+import { GlobalConfig } from "../GlobalConfig";
 
 
 interface StreamPanelProps {
@@ -48,7 +49,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
     };
 
     return (
-        <Card w="800px" mt="20px">
+        <Card w={GlobalConfig.panelWidth} mt="20px">
         <CardHeader>
             <Heading size='md'>Streams</Heading>
         </CardHeader>

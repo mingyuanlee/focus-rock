@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AppStatus } from "../App";
 import { EndStatus, Epoch } from "../models/Epoch";
 import { Box, Button, Card, Text, CardBody, CardHeader, Heading, Input, Select, HStack, useToast } from "@chakra-ui/react";
+import { GlobalConfig } from "../GlobalConfig";
 
 type InProgressPanelProps = {
     appStatus: AppStatus;
@@ -112,7 +113,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
     }, [appStatus.curr_epoch]);
 
     return (
-        <Card w="800px">
+        <Card w={GlobalConfig.panelWidth}>
         <CardHeader>
             <Heading size='md'>In Progress</Heading>
         </CardHeader>

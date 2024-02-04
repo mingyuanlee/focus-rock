@@ -2,6 +2,7 @@ import { Box, Card, Flex, HStack, Heading, Spinner, Tooltip, VStack } from '@cha
 import React, { useEffect, useState } from 'react';
 import { format, getDay } from 'date-fns';
 import { buildColorMap } from '../utils/colors';
+import { GlobalConfig } from '../GlobalConfig';
 
 export interface TimeInterval {
     start: string;
@@ -191,7 +192,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
 
     // Render the TimeChart component here
-    return (<Card py="40px" px="20px" width={"800px"}>
+    return (<Card py="40px" px="20px" w={GlobalConfig.panelWidth}>
         <Heading as="h3" size="md" textAlign={"center"} mb="40px">Time Usage</Heading>
         
         { columns.length === 0 && <Flex width="100%" justifyContent="center" alignItems="center" height="400px">

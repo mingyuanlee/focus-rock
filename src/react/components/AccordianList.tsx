@@ -26,7 +26,7 @@ const AccordionList: React.FC<AccordionListProps> = ({ streams, appStatus, setAp
   const { isOpen: isEpochModalOpen, onOpen: onEpochModalOpen, onClose: onEpochModalClose } = useDisclosure();
   const { isOpen: isExistingEpochModalOpen, onOpen: onExistingEpochModalOpen, onClose: onExistingEpochModalClose } = useDisclosure();
 
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const [addBtnPartition, setAddBtnPartition] = useState<string>("");
   const [addBtnStream, setAddBtnStream] = useState<string>("");
@@ -204,7 +204,7 @@ const addPartition = () => {
     wrappedSetAppStatus(newAppStatus);
 
     setNewEpoch({ target: "", start: '', end: '', endStatus: EndStatus.FINISHED });
-    setSelectedDate("");
+    setSelectedDate(new Date().toISOString().split('T')[0]);
 
     onEpochModalClose();
   }
@@ -226,6 +226,10 @@ const addPartition = () => {
       curr_epoch: appStatus.curr_epoch
     }
     setAppStatus(newStatus);
+
+    setExistingEpoch({ target: "", start: '', end: '', endStatus: EndStatus.FINISHED });
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+
     onExistingEpochModalClose();
   }
 

@@ -10,6 +10,7 @@ import { read, write } from "original-fs";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import SummaryPanel from "./components/SummaryPanel";
 import SettingsPanel from "./components/SettingsPanel";
+import { GlobalConfig } from "./GlobalConfig";
 
 export interface AppStatus {
   curr_streams: Stream[];
@@ -103,7 +104,7 @@ const App = () => {
       >
         
         <VStack py="30px" px="10px">
-          <Box width={"800px"} pb="20px">
+          <Box width={GlobalConfig.panelWidth} pb="20px">
           <HStack spacing={5} justifyContent="space-between">
       <Menu>
         <MenuButton w="220px" as={Button} rightIcon={<ChevronDownIcon />}>
