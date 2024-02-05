@@ -25,3 +25,8 @@ to build
 
 
 the number of streams cannot exceed 500
+
+### Authors
+
+- Boss: mingyuanlee, a dictator who likes to use his assistant 24 hours a day
+- Assistant: Mr.Copilot, a hardwording guy from AiLand who has a potential to become mingyuanlee's boss in several years - maybe he has a plan to use mingyuanlee 24 hours a day, :(

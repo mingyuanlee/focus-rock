@@ -1,4 +1,4 @@
-import { Box, Card, Flex, HStack, Heading, Spinner, Tooltip, VStack } from '@chakra-ui/react';
+import { Box, Card, Flex, FormControl, FormLabel, HStack, Heading, Spinner, Switch, Tooltip, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { format, getDay } from 'date-fns';
 import { buildColorMap } from '../utils/colors';
@@ -47,6 +47,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
     const [colorMap, setColorMap] = useState<{ [key: string]: string }>({});
     const [isLoading, setIsLoading] = useState(true);
+    const [shorterHeight, setShorterHeight] = useState(true);
 
     /* 
     */
@@ -199,9 +200,16 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             Currently no data
             </Flex>}
         { columns.length > 0 && (
+            <Box>
+
+<FormControl display="flex" alignItems="center" mb="50px">
+  <FormLabel mb="0">Hide sleeping time</FormLabel>
+  <Switch isChecked={shorterHeight} onChange={(e) => setShorterHeight(e.target.checked)} />
+</FormControl>
         
         <HStack>
-            <Box height={"520px"} display="flex">
+            
+            <Box height={shorterHeight ? "480px" : "520px"} display="flex">
             <Box width="80px" height={"480px"} bg={"white"}>
                                  { Array.from({ length: 8 }, (_, i) => {
 
@@ -209,6 +217,7 @@ const time = new Date(0, 0, 0, 3 +  3 * i, 0);
 const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute: "2-digit", hour12: true });
                     return (<Box 
                         key={i} 
+                        hidden = {(shorterHeight && i < 2) ? true : false}
                         width="100%" 
                         height={`${480 / 8}px`} 
                         borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
@@ -235,6 +244,7 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                                  { Array.from({ length: 8 }, (_, i) => (
                     <Box 
                         key={i} 
+                        hidden = {(shorterHeight && i < 2) ? true : false}
                         width="100%" 
                         height={`${480 / 8}px`} 
                         borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
@@ -245,11 +255,12 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                             </Box>
                         ) }
                         { column.type === "normal" && (
-                            <Box width="80px" height={"520px"} bg="green">
+                            <Box width="80px" height={shorterHeight ? "400px" : "520px"} bg="green"  >
                                 {
                                     column.boxes?.map((box, index) => (
                                         <Tooltip label={box.hoverText} key={index}>
                                         <Box 
+                                        hidden = {(shorterHeight && index < 2) ? true : false}
                                             borderBottom={box.showBorder === "bottom" ? config.dashlineStyle : "none"} 
                                             borderTop={box.showBorder === "top" ? config.dashlineStyle : "none"}
                                             width="100%" key={index} height={`${box.height}px`} bg={box.stream === "" ? box.color : colorMap[box.stream]} title={box.hoverText}>
@@ -267,7 +278,7 @@ const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute:
                 ))}
             </Box>
             </Box>
-        </HStack>)}
+        </HStack></Box>)}
         
         </Card>);
 };

@@ -107,7 +107,7 @@ const App = () => {
           <Box width={GlobalConfig.panelWidth} pb="20px">
           <HStack spacing={5} justifyContent="space-between">
       <Menu>
-        <MenuButton w="220px" as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton w={GlobalConfig.menuButtonWidth} as={Button} rightIcon={<ChevronDownIcon />}>
           {selectedPanel}
         </MenuButton>
         <MenuList>
@@ -119,7 +119,7 @@ const App = () => {
       </Menu>
 
       <Menu>
-        <MenuButton w="200px" as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton w={GlobalConfig.menuButtonWidth} as={Button} rightIcon={<ChevronDownIcon />}>
           Language
         </MenuButton>
         <MenuList>
@@ -130,7 +130,7 @@ const App = () => {
       </Menu>
 
       <Menu>
-        <MenuButton w="200px" as={Button} rightIcon={<ChevronDownIcon />}>
+        <MenuButton w={GlobalConfig.menuButtonWidth} as={Button} rightIcon={<ChevronDownIcon />}>
           Mode
         </MenuButton>
         <MenuList>
