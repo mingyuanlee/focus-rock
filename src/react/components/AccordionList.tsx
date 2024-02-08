@@ -33,7 +33,7 @@ const AccordionList: React.FC<AccordionListProps> = ({ streams, appStatus, setAp
   const { isOpen: isEpochModalOpen, onOpen: onEpochModalOpen, onClose: onEpochModalClose } = useDisclosure();
   const { isOpen: isExistingEpochModalOpen, onOpen: onExistingEpochModalOpen, onClose: onExistingEpochModalClose } = useDisclosure();
 
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toLocaleDateString());
 
   const [addBtnPartition, setAddBtnPartition] = useState<string>("");
   const [addBtnStream, setAddBtnStream] = useState<string>("");
