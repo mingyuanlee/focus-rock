@@ -21,14 +21,15 @@ const SummaryPanel: React.FC<SummaryPanelProps> = ({ appStatus }) => {
       stream.partitions.forEach(partition => {
         partition.epochs.forEach(epoch => {
           const startDate = new Date(epoch.start).toLocaleString().split(',')[0];
-  
+          if (epoch.start == null) { // skip schedule epoch
+            return; 
+          }
           const interval: TimeInterval = {
             start: epoch.start,
             end: epoch.end,
             stream: stream.topic,
             goal: epoch.target,
           };
-  
           // Assuming the same date is used for start and end
           if (newData[startDate]) {
             newData[startDate].push(interval);

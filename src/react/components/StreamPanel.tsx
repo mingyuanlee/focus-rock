@@ -1,9 +1,8 @@
-import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Tag, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure } from "@chakra-ui/react";
+import { Heading, Input, Button, useToast, Box, Card, CardHeader, CardBody, Switch, FormControl, FormLabel } from "@chakra-ui/react";
 import { AppStatus } from "../App";
 import { useState } from "react";
 import { Stream } from "../models/Stream";
-import { EndStatus } from "../models/Epoch";
-import AccordianList from "./AccordianList";
+import AccordianList from "./AccordionList";
 import { GlobalConfig } from "../GlobalConfig";
 
 
@@ -19,6 +18,7 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
 
     const [showCreate, setShowCreate] = useState(false);
     const [newTopic, setNewTopic] = useState("");
+    const [hideButtons, setHideButtons] = useState(false);
 
     const toast = useToast();
 
@@ -48,6 +48,27 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
         setNewTopic("");
     };
 
+    const sortEpochs = (streams: Stream[]) => {
+        for (const stream of streams) {
+          for (const partition of stream.partitions) {
+            partition.epochs.sort((a, b) => {
+              if (a.start === null) return -1;
+              if (b.start === null) return 1;
+              const dateA = new Date(a.start);
+              const dateB = new Date(b.start);
+              if (dateA > dateB) {
+                return -1;
+              }
+              if (dateA < dateB) {
+                return 1;
+              }
+              return 0;
+            })
+          }
+        }
+        return streams;
+      }
+
     return (
         <Card w={GlobalConfig.panelWidth} mt="20px">
         <CardHeader>
@@ -73,11 +94,18 @@ const StreamPanel: React.FC<StreamPanelProps> = ({
                 <Button colorScheme={"blue"} onClick={() => setShowCreate(true)}>Create a Stream</Button>
             )}
             </Box>
+            
+            <FormControl display="flex" alignItems="center" my="40px">
+                
+                <Switch isChecked={hideButtons} onChange={(e) => setHideButtons(e.target.checked)} />
+                <FormLabel ml="15px" mb="0">Hide Buttons</FormLabel>
+            </FormControl>
+
             <Heading size="sm" mb="18px">Active Streams</Heading>
-            <AccordianList streams={appStatus.curr_streams} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="active" />
+            <AccordianList hideButtons={hideButtons} streams={sortEpochs(appStatus.curr_streams)} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="active" />
 
             <Heading size="sm" my="18px">Archived Streams</Heading>
-            <AccordianList streams={appStatus.archived_streams} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="archived" />
+            <AccordianList hideButtons={hideButtons} streams={sortEpochs(appStatus.archived_streams)} appStatus={appStatus} setAppStatus={setAppStatus} wrappedSetAppStatus={setAppStatus} type="archived" />
         </CardBody>
         </Card>
     );

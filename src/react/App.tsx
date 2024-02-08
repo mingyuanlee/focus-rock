@@ -39,6 +39,8 @@ const App = () => {
 
   const toast = useToast();
 
+
+
   const fetchAppStatus = async () => {
     try {
       const result: string = await new Promise((resolve, reject) => {
@@ -58,7 +60,7 @@ const App = () => {
         {
           curr_streams: data.curr_streams || [],
           archived_streams: data.archived_streams || [],
-          curr_epoch: null,
+          curr_epoch: null
         }
       );
     } catch (error) {

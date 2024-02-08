@@ -90,10 +90,12 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
     }
 
     const makeBoxesForCol = (date: string) => {
-        console.log("makeBoxesForCol", colorMap)
         const intervals = data[date];
         const boxes: ColumnBox[] = [];
         const len = intervals.length;
+        console.log("date", date)
+        console.log("intervals", intervals)
+        intervals.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
         // 1. the first blank box
         if (len > 0) {
             const firstStartTime = new Date(intervals[0].start);
@@ -123,6 +125,7 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             const nextStartInPx = Math.floor(nextStartInMinutes / 3);
             boxes.push(...divideBox(endInPx, nextStartInPx));
         }
+        console.log("boxes", boxes)
         return boxes;
     }
 
@@ -153,7 +156,6 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
         const streamLabels = Array.from(new Set(Object.values(data).flatMap((intervals) => intervals.map((interval) => interval.stream))));
         const colorMap = buildColorMap(streamLabels);
         setColorMap(colorMap);
-        console.log("colorMap", colorMap);
 
             const cols: Column[] = []
         for (const date in data) {
@@ -167,6 +169,8 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
             allCols.push({ date: null, boxes: null, type: "thin" })
             allCols.push(col)
         })
+
+        console.log("allCols", allCols)
 
         setColumns(allCols);
         setIsLoading(false);
@@ -193,94 +197,107 @@ const TimeChart: React.FC<TimeChartProps> = ({ data }) => {
 
 
     // Render the TimeChart component here
-    return (<Card py="40px" px="20px" w={GlobalConfig.panelWidth}>
-        <Heading as="h3" size="md" textAlign={"center"} mb="40px">Time Usage</Heading>
-        
-        { columns.length === 0 && <Flex width="100%" justifyContent="center" alignItems="center" height="400px">
-            Currently no data
-            </Flex>}
-        { columns.length > 0 && (
+    return (
+        <Card py="40px" px="20px" w={GlobalConfig.panelWidth}>
+          <Heading as="h3" size="md" textAlign={"center"} mb="40px">Time Usage</Heading>
+      
+          {columns.length === 0 && 
+            <Flex width="100%" justifyContent="center" alignItems="center" height="400px">
+              Currently no data
+            </Flex>
+          }
+      
+          {columns.length > 0 && (
             <Box>
-
-<FormControl display="flex" alignItems="center" mb="50px">
-  <FormLabel mb="0">Hide sleeping time</FormLabel>
-  <Switch isChecked={shorterHeight} onChange={(e) => setShorterHeight(e.target.checked)} />
-</FormControl>
-        
-        <HStack>
-            
-            <Box height={shorterHeight ? "480px" : "520px"} display="flex">
-            <Box width="80px" height={"480px"} bg={"white"}>
-                                 { Array.from({ length: 8 }, (_, i) => {
-
-const time = new Date(0, 0, 0, 3 +  3 * i, 0);
-const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute: "2-digit", hour12: true });
-                    return (<Box 
-                        key={i} 
-                        hidden = {(shorterHeight && i < 2) ? true : false}
-                        width="100%" 
-                        height={`${480 / 8}px`} 
-                        borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
-                        display="flex"
-    flexDirection="column"
-    justifyContent="flex-end"
-    {...config.leftTimeStyle}
-    textAlign={"right"}
-                    > {timeString} </Box>)
-                                 }) }
-                            </Box>
-            </Box>
-        
-        <Box style={{ overflowX: 'auto' }}>
-            <Box display="flex">
-            { isLoading && <Flex width="600px" justifyContent="center" alignItems="center" height="100vh">
-            <Spinner />
-        </Flex> }
-            { !isLoading && 
-                columns.map((column, index) => (
-                    <Box key={index}>
-                        { column.type === "thin" && (
+              <FormControl display="flex" alignItems="center" mb="50px">
+                <FormLabel mb="0">Hide sleeping time</FormLabel>
+                <Switch isChecked={shorterHeight} onChange={(e) => setShorterHeight(e.target.checked)} />
+              </FormControl>
+      
+              <HStack>
+                <Box height={shorterHeight ? "480px" : "520px"} display="flex">
+                  <Box width="80px" height={"480px"} bg={"white"}>
+                    {Array.from({ length: 8 }, (_, i) => {
+                      const time = new Date(0, 0, 0, 3 + 3 * i, 0);
+                      const timeString = time.toLocaleTimeString(undefined, { hour: 'numeric', minute: "2-digit", hour12: true });
+                      return (
+                        <Box 
+                          key={i} 
+                          hidden={(shorterHeight && i < 2) ? true : false}
+                          width="100%" 
+                          height={`${480 / 8}px`} 
+                          borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="flex-end"
+                          {...config.leftTimeStyle}
+                          textAlign={"right"}
+                        > 
+                          {timeString} 
+                        </Box>
+                      )
+                    })}
+                  </Box>
+                </Box>
+      
+                <Box style={{ overflowX: 'auto' }}>
+                  <Box display="flex">
+                    {isLoading && 
+                      <Flex width="600px" justifyContent="center" alignItems="center" height="100vh">
+                        <Spinner />
+                      </Flex> 
+                    }
+      
+                    {!isLoading && 
+                      columns.map((column, index) => (
+                        <Box key={index}>
+                          {column.type === "thin" && (
                             <Box width="20px" height={"480px"} bg={"white"}>
-                                 { Array.from({ length: 8 }, (_, i) => (
-                    <Box 
-                        key={i} 
-                        hidden = {(shorterHeight && i < 2) ? true : false}
-                        width="100%" 
-                        height={`${480 / 8}px`} 
-                        borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
-                        bg={column.boxes?.[i]?.color || "transparent"} 
-                        title={column.boxes?.[i]?.hoverText || ""}
-                    />
-                )) }
+                              {Array.from({ length: 8 }, (_, i) => (
+                                <Box 
+                                  key={i} 
+                                  hidden={(shorterHeight && i < 2) ? true : false}
+                                  width="100%" 
+                                  height={`${480 / 8}px`} 
+                                  borderBottom={i !== (9 - 1) ? config.dashlineStyle : "none"} 
+                                  bg={column.boxes?.[i]?.color || "transparent"} 
+                                  title={column.boxes?.[i]?.hoverText || ""}
+                                />
+                              ))}
                             </Box>
-                        ) }
-                        { column.type === "normal" && (
-                            <Box width="80px" height={shorterHeight ? "400px" : "520px"} bg="green"  >
-                                {
-                                    column.boxes?.map((box, index) => (
-                                        <Tooltip label={box.hoverText} key={index}>
-                                        <Box 
-                                        hidden = {(shorterHeight && index < 2) ? true : false}
-                                            borderBottom={box.showBorder === "bottom" ? config.dashlineStyle : "none"} 
-                                            borderTop={box.showBorder === "top" ? config.dashlineStyle : "none"}
-                                            width="100%" key={index} height={`${box.height}px`} bg={box.stream === "" ? box.color : colorMap[box.stream]} title={box.hoverText}>
-                                            
-                                            </Box>
-                                        </Tooltip>
-                                    ))
-                                }
-                                <Box {...config.dateStyle} width="100%" height="40px" pt="10px" bg="white" textAlign={"center"}>
-    {formatWithOrdinal(new Date(column.date))}
-</Box>
-                            </Box>)
-                        }
-                    </Box>
-                ))}
+                          )}
+      
+                          {column.type === "normal" && (
+                            <Box width="80px" height={shorterHeight ? "400px" : "520px"} bg="green">
+                              {column.boxes?.map((box, index) => (
+                                <Tooltip label={box.hoverText} key={index}>
+                                  <Box 
+                                    hidden={(shorterHeight && index < 2) ? true : false}
+                                    borderBottom={box.showBorder === "bottom" ? config.dashlineStyle : "none"} 
+                                    borderTop={box.showBorder === "top" ? config.dashlineStyle : "none"}
+                                    width="100%" 
+                                    key={index} 
+                                    height={`${box.height}px`} 
+                                    bg={box.stream === "" ? box.color : colorMap[box.stream]} 
+                                    title={box.hoverText}
+                                  />
+                                </Tooltip>
+                              ))}
+                              <Box {...config.dateStyle} width="100%" height="40px" pt="10px" bg="white" textAlign={"center"}>
+                                {formatWithOrdinal(new Date(column.date))}
+                              </Box>
+                            </Box>
+                          )}
+                        </Box>
+                      ))
+                    }
+                  </Box>
+                </Box>
+              </HStack>
             </Box>
-            </Box>
-        </HStack></Box>)}
-        
-        </Card>);
+          )}
+        </Card>
+      );
 };
 
 export default TimeChart;

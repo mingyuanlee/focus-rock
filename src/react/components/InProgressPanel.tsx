@@ -53,7 +53,7 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                 target,
                 start: null,
                 end: null,
-                endStatus: EndStatus.FINISHED,
+                endStatus: EndStatus.TODO,
             }
             const stream = appStatus.curr_streams.find((stream) => stream.topic === selectedStream);
             const partition = stream.partitions.find((partition) => partition.name === selectedPartition);
@@ -71,6 +71,9 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
                 duration: 5000,
                 isClosable: true,
             });
+            setTarget("");
+            setSelectedPartition("");
+            setSelectedStream("");
         }
     }
 
@@ -85,9 +88,9 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
             endStatus: status,
         }
 
-        const streamName = selectedStream ? selectedStream : appStatus.selectedStream;
+        const streamName = appStatus.selectedStream ? appStatus.selectedStream :  selectedStream;
         const stream = appStatus.curr_streams.find((stream) => stream.topic === streamName);
-        const partitionName = selectedPartition ? selectedPartition : appStatus.selectedPartition;
+        const partitionName = appStatus.selectedPartition? appStatus.selectedPartition:  selectedPartition;
         if (appStatus.needToReplace) {
             const partition = stream.partitions.find((partition) => partition.name === partitionName);
             partition.epochs = partition.epochs.map((epoch) => epoch.target === newEpoch.target ? newEpoch : epoch);
@@ -170,16 +173,16 @@ const InProgressPanel: React.FC<InProgressPanelProps> = ({ appStatus, setAppStat
         }
         {
             appStatus.curr_epoch !== null && 
-            <CardBody w="600px">
-                <Text mb="10px">Target: {appStatus.curr_epoch.target}</Text>
-                <Text mb="20px">Time used: {timeUsed} minutes</Text>
+            <CardBody w="100%" textAlign={"center"}>
+                <Heading size={"md"} mb="20px"><b>Ongoing Epoch: {appStatus.curr_epoch.target}</b></Heading>
+                <Text mb="30px">Time Elapsed: {timeUsed} minutes</Text>
                 {!clickedEnd ? (
-                    <Button colorScheme='blue' onClick={handleEndEpoch}>End Epoch</Button>
+                    <Button mb="30px" colorScheme='blue' onClick={handleEndEpoch}>End Epoch</Button>
                 ) : (
                     <>
-                        <Button mr="5px" colorScheme='blue' onClick={() => handleRealFinish(EndStatus.FINISHED)}>Finish</Button>
-                        <Button mr="5px" colorScheme='blue' onClick={() => handleRealFinish(EndStatus.UNFINISHED)}>Unfinish</Button>
-                        <Button colorScheme='blue' onClick={() => handleRealFinish(EndStatus.INTERRUPTED)}>Interrupted</Button>
+                        <Button mb="30px"  mr="5px" colorScheme='blue' onClick={() => handleRealFinish(EndStatus.FINISHED)}>Finish</Button>
+                        <Button mb="30px"  mr="5px" colorScheme='blue' onClick={() => handleRealFinish(EndStatus.UNFINISHED)}>Unfinish</Button>
+                        <Button mb="30px"  colorScheme='blue' onClick={() => handleRealFinish(EndStatus.INTERRUPTED)}>Interrupted</Button>
                     </>
                 )}
             </CardBody>
