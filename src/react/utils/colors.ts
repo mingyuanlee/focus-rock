@@ -13,8 +13,11 @@ const generateColors = () => {
 
 export const buildColorMap = (labels: string[]) => {
     const colorMap: Record<string, string> = {};
-    const colors = generateColors();
+    let colors = generateColors();
     for (const label of labels) {
+        if (colors.length == 0) {
+            colors = generateColors();
+        }
         colorMap[label] = colors.pop();
     }
     return colorMap;
