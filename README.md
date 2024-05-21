@@ -1,17 +1,19 @@
 ### Forewords: What's Goal Forest
 
-What the f**k am I doing? - That's the question I ask myself everyday. When I'm not sure where I'm investing the time and effort, I'm trapped in a random status doing nothing, which eventually leads to frustration - because I have wasted a day in my life.<br />
+<img width="1201" alt="Screenshot 2024-05-21 at 11 05 13 AM" src="https://github.com/mingyuanlee/goal-forest/assets/80768219/5824c74f-3525-4999-8b99-d0269b81121c">
 
-I had enough frustration, so I decided to use my time wisely. I realized that my current status actually comes from two things: decision and effort. When I feel good, it's usually because I made several great decisions and put the effort on the right things. When I feel bad, it's usually because of the opposite. Decisions are a another bunch of stuff, I'm focusing on efforts here.<br />
+<img width="1197" alt="Screenshot 2024-05-21 at 11 06 51 AM" src="https://github.com/mingyuanlee/goal-forest/assets/80768219/0cff8f88-e381-451f-852c-5878e8836e82">
 
-How do you make solid efforts? Tons of dust don't make a building, they need a structure. I need to make sure my hardworks don't become tons of dust as the time moves. So I need some forms of structure. I designed two of them, one is stream, the other is epoch. A stream is a collections of epochs, and each epoch is a period of time assigned with a specific goal. Learning French can be a stream, preparing for TCF test can be a stage, and finishing each listening practice chapter can be an epoch. During each epoch, I don't think about or do anything irrelevant to the goal. If I can't focus, I'll stop and restore to the right status. 
-<br />
+<img width="1197" alt="Screenshot 2024-05-21 at 11 07 13 AM" src="https://github.com/mingyuanlee/goal-forest/assets/80768219/0ef6afc0-7d7b-4819-a0ae-a606a6a4d644">
 
-I developed this tool to keep track of my time usage. I can then understand how many hours of my life have been converted to epochs and how many hours have been wasted, what goals have I completed, and what streams is my life distributed on.
 
-### Details About Time Management
+What the f**k am I doing? - That's the question I ask myself everyday. <br />
 
-Coming soon.
+When I'm not sure where I'm investing the time and effort, I'm trapped in a status of doing nothing, which eventually leads to frustration - because I have wasted a day in my life.<br />
+
+I had enough frustration, so I decided to use my time wisely. I want to see what I did in the past week and how much time I contributed to each topic. <br />
+
+The philosophy behind this tool: I divide my lifetime into streams, for example, learning French, doing research and etc. Then I divide each stream into partitions, they are like a stage in each stream, for example, pass the TEF French Test. Finally I divide partitions into epochs, where I finish or not finish some task (e.g. learning section 1 grammar) in a specific range of time. I keep track of these things and update them freely in the app. <br />
 
 ### Useful Commands
 
@@ -21,10 +23,6 @@ to develop
 
 to build
 `npm run dist-mac`
-
-
-
-the number of streams cannot exceed 500
 
 ### Authors
 
